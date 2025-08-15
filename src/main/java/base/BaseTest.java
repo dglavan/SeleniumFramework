@@ -14,9 +14,11 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
+import utils.Constants;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.time.Duration;
 
 public class BaseTest {
     public static WebDriver driver;
@@ -27,7 +29,7 @@ public class BaseTest {
     @BeforeTest
     public void beforeTestMethod() {
         // Configure extent reporter
-        String reportPath = System.getProperty("user.dir") + File.separator + "reports" + File.separator + "SDETEBO";
+        String reportPath = System.getProperty("user.dir") + File.separator + "reports" + File.separator + "SDETEBO" + File.separator + "Ebo_Test_Report.html";
         sparkReporter = new ExtentSparkReporter(reportPath);
         extent = new ExtentReports();
         extent.attachReporter(sparkReporter);
@@ -45,6 +47,9 @@ public class BaseTest {
     public void beforeMethodMethod(String browser, Method testMethod) {
         logger = extent.createTest(testMethod.getName());
         setupDriver(browser);
+        driver.manage().window().maximize();
+        driver.get(Constants.url);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
     }
 
     @AfterMethod
@@ -64,7 +69,7 @@ public class BaseTest {
     }
 
     @AfterTest
-    public void afterTestMethod() {
+    public void afterTest() {
         if (extent != null) {
             extent.flush();
         }
@@ -75,11 +80,11 @@ public class BaseTest {
             WebDriverManager.chromedriver().setup();
             driver = new ChromeDriver();
         } else if (browser.equalsIgnoreCase("firefox")) {
-            WebDriverManager.firefoxdriver().setup();
+            System.setProperty("webdriver.gecko.driver", "C:\\ebollass\\Selenium\\SeleniumFramework\\drivers\\geckodriver.exe");
             driver = new FirefoxDriver();
         } else if (browser.equalsIgnoreCase("edge")) {
-            WebDriverManager.edgedriver().setup();
-            driver = new EdgeDriver();
+            System.setProperty("webdriver.edge.driver", "C:\\ebollass\\Selenium\\SeleniumFramework\\drivers\\msedgedriver.exe");
+            driver = new EdgeDriver(); // ✅ Assign to class-level variable
         } else {
             throw new IllegalArgumentException("Unsupported browser: " + browser);
         }
