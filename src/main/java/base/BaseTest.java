@@ -76,17 +76,33 @@ public class BaseTest {
     }
 
     public void setupDriver(String browser) {
-        if (browser.equalsIgnoreCase("chrome")) {
-            WebDriverManager.chromedriver().setup();
-            driver = new ChromeDriver();
-        } else if (browser.equalsIgnoreCase("firefox")) {
-            System.setProperty("webdriver.gecko.driver", "C:\\ebollass\\Selenium\\SeleniumFramework\\drivers\\geckodriver.exe");
-            driver = new FirefoxDriver();
-        } else if (browser.equalsIgnoreCase("edge")) {
-            System.setProperty("webdriver.edge.driver", "C:\\ebollass\\Selenium\\SeleniumFramework\\drivers\\msedgedriver.exe");
-            driver = new EdgeDriver(); // ✅ Assign to class-level variable
-        } else {
-            throw new IllegalArgumentException("Unsupported browser: " + browser);
+        try {
+            if (browser.equalsIgnoreCase("chrome")) {
+                WebDriverManager.chromedriver().setup();
+                driver = new ChromeDriver();
+            } else if (browser.equalsIgnoreCase("firefox")) {
+                WebDriverManager.firefoxdriver().setup();
+                driver = new FirefoxDriver();
+            } else if (browser.equalsIgnoreCase("edge")) {
+                WebDriverManager.edgedriver().setup();
+                driver = new EdgeDriver();
+            } else {
+                throw new IllegalArgumentException("Unsupported browser: " + browser);
+            }
+        } catch (Exception e) {
+            // Fallback to manual path if WebDriverManager fails
+            System.out.println("WebDriverManager failed: " + e.getMessage());
+
+            if (browser.equalsIgnoreCase("chrome")) {
+                System.setProperty("webdriver.chrome.driver", "C:\\ebollass\\Selenium\\SeleniumFramework\\drivers\\chromedriver.exe");
+                driver = new ChromeDriver();
+            } else if (browser.equalsIgnoreCase("firefox")) {
+                System.setProperty("webdriver.gecko.driver", "C:\\ebollass\\Selenium\\SeleniumFramework\\drivers\\geckodriver.exe");
+                driver = new FirefoxDriver();
+            } else if (browser.equalsIgnoreCase("edge")) {
+                System.setProperty("webdriver.edge.driver", "C:\\ebollass\\Selenium\\SeleniumFramework\\drivers\\msedgedriver.exe");
+                driver = new EdgeDriver();
+            }
         }
     }
 }
